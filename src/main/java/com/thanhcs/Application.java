@@ -32,10 +32,10 @@ public class Application {
             System.out.println("Number of column currently: " + firstSheet.getRow(0).getPhysicalNumberOfCells());
 
             Object[][] datas = {
-                    {"A", "Nguyen", new SimpleDateFormat("MM/dd/yyyy").parse("12/5/1993"), 22, "Computer Science", null},
-                    {"B", "McCord", new SimpleDateFormat("MM/dd/yyyy").parse("5/5/2010"), 16, "NA", null},
-                    {"Alice", "Tran", new SimpleDateFormat("MM/dd/yyyy").parse("1/7/1983"), 30, "Biology", null},
-                    {"Peter", "Pan", new SimpleDateFormat("MM/dd/yyyy").parse("2/12/1989"), 27, "Biology", null},
+                    {"A", "Nguyen", new SimpleDateFormat("MM/dd/yyyy").parse("12/5/1993"), 22, "Computer Science", null, null, null, null},
+                    {"B", "McCord", new SimpleDateFormat("MM/dd/yyyy").parse("5/5/2010"), 16, "NA", null, null, null, null},
+                    {"Alice", "Tran", new SimpleDateFormat("MM/dd/yyyy").parse("1/7/1983"), 30, "Biology", null, null, null, null},
+                    {"Peter", "Pan", new SimpleDateFormat("MM/dd/yyyy").parse("2/12/1989"), 27, "Biology", null, null, null, null},
             };
             int sampleRowIndex = firstSheet.getPhysicalNumberOfRows() - 1;
             Row sampleRow = firstSheet.getRow(sampleRowIndex);
@@ -56,6 +56,7 @@ public class Application {
                             cell.setCellFormula(relativeFormula);
                         }
                         colNum++;
+                        continue;
                     }
                     if (field instanceof String) {
                         cell.setCellValue((String) field);
