@@ -37,8 +37,8 @@ public class Application {
                     {"Alice", "Tran", new SimpleDateFormat("MM/dd/yyyy").parse("1/7/1983"), 30, "Biology", null},
                     {"Peter", "Pan", new SimpleDateFormat("MM/dd/yyyy").parse("2/12/1989"), 27, "Biology", null},
             };
-            int sampleRowExcelIndex = firstSheet.getPhysicalNumberOfRows();
-            Row sampleRow = firstSheet.getRow(firstSheet.getPhysicalNumberOfRows() - 1);
+            int sampleRowIndex = firstSheet.getPhysicalNumberOfRows() - 1;
+            Row sampleRow = firstSheet.getRow(sampleRowIndex);
 
             int rowNum = firstSheet.getPhysicalNumberOfRows();
             System.out.println("Creating excel");
@@ -52,7 +52,7 @@ public class Application {
                     if (field == null) {
                         if (sampleRow.getCell(colNum).getCellTypeEnum() == CellType.FORMULA) {
                             String formula = sampleRow.getCell(colNum).getCellFormula();
-                            String relativeFormula = formula.replaceAll("([A-Z]+)(" + sampleRowExcelIndex + ")", "$1" + (rowNum + 1));
+                            String relativeFormula = formula.replaceAll("([A-Z]+)(" + (sampleRowIndex + 1) + ")", "$1" + (rowNum + 1)); //+1 due to the excel UI index
                             cell.setCellFormula(relativeFormula);
                         }
                         colNum++;
@@ -69,9 +69,13 @@ public class Application {
                 rowNum++;
             }
 
+            XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
+
+            // Removing sample row
+            removeRow(firstSheet, sampleRowIndex);
+
             try {
                 FileOutputStream outputStream = new FileOutputStream("out.xlsx");
-                XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
                 workbook.write(outputStream);
                 workbook.close();
             } catch (FileNotFoundException e) {
@@ -97,8 +101,21 @@ public class Application {
             } catch (IOException e) {
                 System.out.println("IOException when trying to close " + e.getMessage());
             }
-
         }
         System.out.println("End.");
+    }
+
+    // Source: https://stackoverflow.com/questions/21946958/how-to-remove-a-row-using-apache-poi/21947170
+    private static void removeRow(XSSFSheet sheet, int rowIndex) {
+        int lastRowNum = sheet.getLastRowNum();
+        if (rowIndex >= 0 && rowIndex < lastRowNum) {
+            sheet.shiftRows(rowIndex + 1, lastRowNum, -1);
+        }
+        if (rowIndex == lastRowNum) {
+            Row removingRow = sheet.getRow(rowIndex);
+            if (removingRow != null) {
+                sheet.removeRow(removingRow);
+            }
+        }
     }
 }
